@@ -1,0 +1,27 @@
+openapi: '3.1.0'
+info:
+  title: app-attest-service
+  version: 1.0.0
+servers:
+  - url: https://localhost:44947
+    description: Localhost service deployment.
+paths:
+  /secret:
+    get:
+      operationId: getSecret
+      responses:
+        '200':
+          description: A success response with a the secret.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Secret'
+components:
+  schemas:
+    Secret:
+      type: object
+      properties:
+        secret:
+          type: string
+      required:
+        - secret
