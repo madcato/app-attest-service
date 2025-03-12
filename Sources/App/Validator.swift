@@ -1,22 +1,22 @@
 import AppAttest
-
+import Foundation
 enum Validator {
     /// Parameters `attestation` and `challenge` are expected to be base64 encoded strings.
     static func isValid(attestation: String, challenge: String, keyId: String) -> Bool {
-        guard let attestation = attestation.data(using: .utf8),
-            let challenge = challenge.data(using: .utf8),
-            let keyId = keyId.data(using: .utf8) else {
+        guard let attestation = Data(base64Encoded: attestation),
+            let challenge = Data(base64Encoded: challenge),
+            let keyId = Data(base64Encoded: keyId) else {
                 print("Invalid data encoding in validator.swift")
                 return false
             }
             // Construct the attestation request and app ID,
             // which are simple structs
             let request = AppAttest.AttestationRequest(attestation: attestation, keyID: keyId)
-            let appID = AppAttest.AppID(teamID: "83Z139DVZ2", bundleID: "com.example.myapp")
-
+            let appID = AppAttest.AppID(teamID: "TW65EXAM4U", bundleID: "org.veladan.AppAttestClientDemo")
             // Verify the attestation
             do {
                 let result = try AppAttest.verifyAttestation(challenge: challenge, request: request, appID: appID)
+                // Vendría bien comprobar el result.publicKey y el certificado de la app.
             } catch {
                 // Handle the error
                 print("Attestation verification failed: \(error)")

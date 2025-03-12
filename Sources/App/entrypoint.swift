@@ -47,6 +47,7 @@ struct Handler: APIProtocol {
     static func main() async throws {
         let app = Vapor.Application()
         app.http.server.configuration.port = 44947
+        app.http.server.configuration.hostname = "0.0.0.0"
         let transport = VaporTransport(routesBuilder: app)
         let handler = Handler()
         try handler.registerHandlers(on: transport, serverURL: Servers.Server1.url())

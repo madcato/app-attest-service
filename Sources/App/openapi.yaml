@@ -3,7 +3,7 @@ info:
   title: app-attest-service
   version: 1.0.0
 servers:
-  - url: https://localhost:44947
+  - url: http://0.0.0.0:44147
     description: Localhost service deployment.
 paths:
   /secret:
