@@ -12,6 +12,7 @@ To develop this project, first install the dependencies:
 
 ## Documentation
 
+- [DeviceCheck documentation](https://developer.apple.com/documentation/devicecheck)
 - [Mitigate fraud with App Attest and DeviceCheck](https://developer.apple.com/videos/play/wwdc2021/10244/)
 - [Vapor website](https://vapor.codes)
 - [Swift OpenAPI Vapor](https://github.com/swift-server/swift-openapi-vapor)

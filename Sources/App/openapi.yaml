@@ -15,9 +15,49 @@ paths:
           content:
             application/json:
               schema:
+                $ref: '#/components/schemas/Challenge'
+    post:
+      operationId: postSecret
+      requestBody:
+        description: The completed challenge to access the secret
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompletedChallenge'
+        required: true
+      responses:
+        '200':
+          description: A success response with a the secret.
+          content:
+            application/json:
+              schema:
                 $ref: '#/components/schemas/Secret'
 components:
   schemas:
+    Challenge:
+      type: object
+      properties:
+        challenge:
+          description: BASE64 encoded challenge.
+          type: string
+      required:
+        - challenge
+    CompletedChallenge:
+      type: object
+      properties:
+        challenge:
+          description: BASE64 encoded challenge.
+          type: string
+        attestation:
+          description: BASE64 encoded attestation.
+          type: string
+        keyId:
+          description: BASE64 encoded keyId.
+          type: string
+      required:
+        - challenge
+        - attestation
+        - keyId
     Secret:
       type: object
       properties:

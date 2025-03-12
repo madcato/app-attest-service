@@ -15,6 +15,8 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-openapi-generator.git", from: "1.7.0"),
         // 📝 OpenAPI runtime for Swift.
         .package(url: "https://github.com/apple/swift-openapi-runtime", from: "1.7.0"),
+        // AppAttest support for Swift.
+        .package(url: "https://github.com/iansampson/AppAttest.git", branch: "main"),
     ],
     targets: [
         .executableTarget(
@@ -22,7 +24,8 @@ let package = Package(
             dependencies: [
                 .product(name: "Vapor", package: "vapor"),
                 .product(name: "OpenAPIVapor", package: "swift-openapi-vapor"),
-                .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime")
+                .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
+                .product(name: "AppAttest", package: "AppAttest"),
             ],
             plugins: [
                .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator"),
