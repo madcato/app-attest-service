@@ -9,6 +9,7 @@ var validChallenges: [String] = []
 
 struct Handler: APIProtocol {
 
+    static let secret = ProcessInfo.processInfo.environment["SECRET"] ?? "SECRET enviroment variable not found"
 
     func getSecret(_ input: Operations.GetSecret.Input) async throws -> Operations.GetSecret.Output {
         let challenge = Data(AES.GCM.Nonce()).base64EncodedString()
@@ -38,13 +39,15 @@ struct Handler: APIProtocol {
         }
         
         // Return the secret
-        return .ok(.init(body: .json(.init(secret: "secret revealed!"))))
+        return .ok(.init(body: .json(.init(secret: Handler.secret))))
     }
 }
 
 
 @main struct Entrypoint {
     static func main() async throws {
+        let secret = ProcessInfo.processInfo.environment["SECRET"] ?? "SECRET enviroment variable not found"
+        print("Secret \(secret)")
         let app = Vapor.Application()
         app.http.server.configuration.port = 44947
         app.http.server.configuration.hostname = "0.0.0.0"
