@@ -25,4 +25,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ github.ref }}  # Use the tag as the image tag
+          tags: app-attest-service:${{ github.ref | replace('refs/heads/', '') | replace('refs/tags/', '') }}   # Use the tag as the image tag
