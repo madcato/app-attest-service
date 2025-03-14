@@ -13,7 +13,7 @@ import OpenAPIURLSession
 
 class AppAttestTester {
   func downloadSecret() async throws -> String {
-    let client = Client(serverURL: URL(string: "http://tesla.local:44947")!, transport: URLSessionTransport())
+    let client = Client(serverURL: URL(string: "https://tesla.codebenderai.click" /*"http://tesla.local:44947"*/)!, transport: URLSessionTransport())
     let response = try await client.getSecret(.init())  // Get challenge for app-attest-service
     switch response {
     case .ok(let okResponse):
