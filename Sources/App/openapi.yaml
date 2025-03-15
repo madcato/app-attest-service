@@ -65,3 +65,11 @@ components:
           type: string
       required:
         - secret
+  securitySchemes:
+    BearerAuth: # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+
+# 2) Apply the security globally to all operations
+security:
+  - BearerAuth: [] # use the same name as above
