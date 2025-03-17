@@ -45,7 +45,7 @@ The application's behavior can be configured through environment variables.
 *   **`LOG_LEVEL`**:  Sets the logging level (default: `debug`).
 *   **`.env.secret`**:  Contains sensitive configuration information (e.g., API keys, database credentials).  **Important:** Do not commit this file to version control.
     This file must have the following format and variables:
-    ```ini
+    ```
     APPLE_DEVELOPER_ACCOUNT_TEAM_ID=<your_apple_developer_account_team_id>'
     APPLE_APP_BUNLDE_ID=<your_app_bundle_id>
     SECRET=<the_secret_to_be_distributed>
