@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0B1B4E2F2D81B28A003D0CCA /* OpenAPIRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 0B1B4E2E2D81B28A003D0CCA /* OpenAPIRuntime */; };
 		0B1B4E472D81B517003D0CCA /* OpenAPIURLSession in Frameworks */ = {isa = PBXBuildFile; productRef = 0B1B4E462D81B517003D0CCA /* OpenAPIURLSession */; };
+		0B8843F62D8837CA000962C8 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0B8843F52D8837CA000962C8 /* KeychainSwift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +59,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B8843F62D8837CA000962C8 /* KeychainSwift in Frameworks */,
 				0B1B4E472D81B517003D0CCA /* OpenAPIURLSession in Frameworks */,
 				0B1B4E2F2D81B28A003D0CCA /* OpenAPIRuntime in Frameworks */,
 			);
@@ -124,6 +126,7 @@
 			packageProductDependencies = (
 				0B1B4E2E2D81B28A003D0CCA /* OpenAPIRuntime */,
 				0B1B4E462D81B517003D0CCA /* OpenAPIURLSession */,
+				0B8843F52D8837CA000962C8 /* KeychainSwift */,
 			);
 			productName = AppAttestClientDemo;
 			productReference = 0B1B4E002D81B242003D0CCA /* AppAttestClientDemo.app */;
@@ -211,6 +214,7 @@
 				0B1B4E2D2D81B28A003D0CCA /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */,
 				0B1B4E332D81B2E8003D0CCA /* XCRemoteSwiftPackageReference "swift-openapi-generator" */,
 				0B1B4E452D81B517003D0CCA /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */,
+				0B8843F42D8837CA000962C8 /* XCRemoteSwiftPackageReference "keychain-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0B1B4E012D81B242003D0CCA /* Products */;
@@ -605,6 +609,14 @@
 				minimumVersion = 1.0.2;
 			};
 		};
+		0B8843F42D8837CA000962C8 /* XCRemoteSwiftPackageReference "keychain-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/evgenyneu/keychain-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 24.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -622,6 +634,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0B1B4E452D81B517003D0CCA /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */;
 			productName = OpenAPIURLSession;
+		};
+		0B8843F52D8837CA000962C8 /* KeychainSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0B8843F42D8837CA000962C8 /* XCRemoteSwiftPackageReference "keychain-swift" */;
+			productName = KeychainSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

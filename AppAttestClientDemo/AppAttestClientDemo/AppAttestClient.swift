@@ -10,9 +10,10 @@ import Foundation
 import DeviceCheck
 import OpenAPIRuntime
 import OpenAPIURLSession
+import KeychainSwift
 
 class AppAttestTester {
-  func downloadSecret() async throws -> String {
+  func downloadSecret(keyName: String? = nil) async throws -> String {
     let client = Client(serverURL: URL(string: "https://tesla.codebenderai.click" /*"http://tesla.local:44947"*/)!, transport: URLSessionTransport(), middlewares: [AuthenticationMiddleware(authorizationHeaderFieldValue: "Bearer hFDp2PH5/MfrbasANQYGmSoWrTtqDtbt8jR4+2Z1Gog=")])
     let response = try await client.getSecret(.init())  // Get challenge for app-attest-service
     switch response {
@@ -22,6 +23,11 @@ class AppAttestTester {
         let challenge = challengeInput.challenge
         let (attestation, keyId) = try await makeAttestation(challenge: challenge)
         let secret = try await send(attestation: attestation, challenge: challenge, keyId: keyId, with: client)
+        if let keyName = keyName {
+          // Store the secret in Keychain
+          let keychain = KeychainSwift()
+          keychain.set(secret, forKey: keyName)
+        }
         return secret
       }
     case .undocumented(statusCode: let statusCode, let payload):
@@ -77,4 +83,11 @@ extension AuthenticationMiddleware: ClientMiddleware {
         request.headerFields[.authorization] = value
         return try await next(request, body, baseURL)
     }
+}
+
+
+// To read from Keychain
+func getSecretFromKeychain() -> String? {
+    let keychain = KeychainSwift()
+    return keychain.get("app_secret")
 }
