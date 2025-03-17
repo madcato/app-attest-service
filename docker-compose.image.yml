@@ -1,0 +1,11 @@
+services:
+  app-attest-service:
+    image: veladan/app-attest-service
+    container_name: app-attest
+    ports:
+      - "44947:44947"
+    environment:
+      - APPLE_DEVELOPER_ACCOUNT_TEAM_ID=<your_apple_developer_account_team_id>'
+      - APPLE_APP_BUNLDE_ID=<your_app_bundle_id>
+      - SECRET=<the_secret_to_be_distributed>
+    restart: always

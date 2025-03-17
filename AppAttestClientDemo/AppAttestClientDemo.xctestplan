@@ -1,0 +1,38 @@
+{
+  "configurations" : [
+    {
+      "id" : "5F7D4FB7-7848-47AE-9A65-AC486E15FCDC",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:AppAttestClientDemo.xcodeproj",
+      "identifier" : "0B1B4DFF2D81B242003D0CCA",
+      "name" : "AppAttestClientDemo"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:AppAttestClientDemo.xcodeproj",
+        "identifier" : "0B1B4E0F2D81B243003D0CCA",
+        "name" : "AppAttestClientDemoTests"
+      }
+    },
+    {
+      "enabled" : false,
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:AppAttestClientDemo.xcodeproj",
+        "identifier" : "0B1B4E192D81B243003D0CCA",
+        "name" : "AppAttestClientDemoUITests"
+      }
+    }
+  ],
+  "version" : 1
+}
