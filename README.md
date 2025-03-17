@@ -4,7 +4,7 @@ HTTP service to provide ios apps with security data like api tokens through a ve
 
 This project demonstrates an application utilizing Apple's App Attest framework.  It provides a service that can be used to verify the integrity of an application on a device.
 
-**IMPORTANT** This service does not provice SSL communication. Use a configured reverse proxy like nginx, or use Cloudflared tunnel.
+**IMPORTANT:** This service does not provide SSL communication. Use a configured reverse proxy like nginx, or use Cloudflared tunnel.
 
 ## Overview
 
