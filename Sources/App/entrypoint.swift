@@ -8,10 +8,35 @@ import Crypto
 var validChallenges: [String] = []
 
 struct LoggerMiddleware: Middleware {
-    func respond(to request: Request, chainingTo next: Responder) -> EventLoopFuture<Response> {
-        print("Request: \(request.method.rawValue) \(request.url.string)")
-        return next.respond(to: request)
+  func respond(to request: Request, chainingTo next: Responder) -> EventLoopFuture<Response> {
+    print("Request: \(request.method.rawValue) \(request.url.string)")
+    return next.respond(to: request)
+  }
+}
+
+// Optional: Simple rate limiting middleware (tracks requests per IP in memory; replace with a proper package for production)
+class RateLimitMiddleware: Middleware {
+  private var requestCounts: [String: (count: Int, resetTime: Date)] = [:]
+  private let maxRequestsPerMinute = 10  // Adjust as needed
+  
+  func respond(to request: Request, chainingTo next: Responder) -> EventLoopFuture<Response> {
+    let ip = request.remoteAddress?.ipAddress ?? "unknown"
+    let now = Date()
+    
+    if let (count, resetTime) = requestCounts[ip] {
+      if now > resetTime {
+        requestCounts[ip] = (1, now.addingTimeInterval(60))
+      } else if count >= maxRequestsPerMinute {
+        return request.eventLoop.makeFailedFuture(Abort(.tooManyRequests))
+      } else {
+        requestCounts[ip] = (count + 1, resetTime)
+      }
+    } else {
+      requestCounts[ip] = (1, now.addingTimeInterval(60))
     }
+    
+    return next.respond(to: request)
+  }
 }
 
 struct Handler: APIProtocol {
@@ -65,7 +90,11 @@ struct Config: Codable {
     let app = try await Vapor.Application.make()
     app.http.server.configuration.port = config.port
     app.http.server.configuration.hostname = config.hostname
-    app.middleware.use(LoggerMiddleware())
+    
+    // Add middleware (order matters: earlier middleware runs first)
+    app.middleware.use(LoggerMiddleware())  // Your existing logger
+    app.middleware.use(RateLimitMiddleware())  // Optional: Basic rate limiting
+    
     let transport = VaporTransport(routesBuilder: app)
     let handler = Handler()
     try handler.registerHandlers(on: transport, serverURL: Servers.Server1.url())

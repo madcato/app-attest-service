@@ -17,7 +17,7 @@ enum Validator {
             let appID = AppAttest.AppID(teamID: Validator.teamId, bundleID: Validator.bundleId)
             // Verify the attestation
             do {
-                let result = try AppAttest.verifyAttestation(challenge: challenge, request: request, appID: appID)
+                _ = try AppAttest.verifyAttestation(challenge: challenge, request: request, appID: appID)
                 // Vendría bien comprobar el result.publicKey y el certificado de la app.
             } catch {
                 // Handle the error
