@@ -1,4 +1,4 @@
-// swift-tools-version:6.1
+// swift-tools-version:5.9
 import PackageDescription
 
 let package = Package(
@@ -10,6 +10,8 @@ let package = Package(
   dependencies: [
     // 💧 A server-side Swift web framework.
     .package(url: "https://github.com/vapor/vapor.git", from: "4.110.1"),
+    .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0"),
+    .package(url: "https://github.com/vapor/fluent-sqlite-driver.git", from: "4.0.0"),
     // 📝 OpenAPI support for Vapor.
     .package(url: "https://github.com/swift-server/swift-openapi-vapor.git", from: "1.0.1"),
     // 📝 OpenAPI support for Swift.
@@ -23,6 +25,8 @@ let package = Package(
     .executableTarget(
       name: "App",
       dependencies: [
+        .product(name: "Fluent", package: "fluent"),
+        .product(name: "FluentSQLiteDriver", package: "fluent-sqlite-driver"),
         .product(name: "Vapor", package: "vapor"),
         .product(name: "OpenAPIVapor", package: "swift-openapi-vapor"),
         .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),

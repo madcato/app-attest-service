@@ -4,8 +4,8 @@ import OpenAPIRuntime
 import OpenAPIVapor
 import Vapor
 import Crypto
-
-var validChallenges: [String] = []
+import Fluent
+import FluentSQLiteDriver
 
 struct LoggerMiddleware: Middleware {
   func respond(to request: Request, chainingTo next: Responder) -> EventLoopFuture<Response> {
@@ -15,9 +15,9 @@ struct LoggerMiddleware: Middleware {
 }
 
 // Optional: Simple rate limiting middleware (tracks requests per IP in memory; replace with a proper package for production)
-class RateLimitMiddleware: Middleware {
+final class RateLimitMiddleware: Middleware {
   private var requestCounts: [String: (count: Int, resetTime: Date)] = [:]
-  private let maxRequestsPerMinute = 10  // Adjust as needed
+  private let maxRequestsPerMinute = 7  // Adjust as needed
   
   func respond(to request: Request, chainingTo next: Responder) -> EventLoopFuture<Response> {
     let ip = request.remoteAddress?.ipAddress ?? "unknown"
@@ -39,8 +39,11 @@ class RateLimitMiddleware: Middleware {
   }
 }
 
+nonisolated(unsafe) var validChallenges: [String] = []
+
 struct Handler: APIProtocol {
   
+  private
   static let secret = ProcessInfo.processInfo.environment["SECRET"] ?? "SECRET enviroment variable not found"
   
   func getSecret(_ input: Operations.GetSecret.Input) async throws -> Operations.GetSecret.Output {
@@ -78,6 +81,7 @@ struct Handler: APIProtocol {
 struct Config: Codable {
   let port: Int
   let hostname: String
+  let sqliteFileName: String
 }
 
 @main struct Entrypoint {
@@ -90,10 +94,16 @@ struct Config: Codable {
     let app = try await Vapor.Application.make()
     app.http.server.configuration.port = config.port
     app.http.server.configuration.hostname = config.hostname
-    
     // Add middleware (order matters: earlier middleware runs first)
     app.middleware.use(LoggerMiddleware())  // Your existing logger
     app.middleware.use(RateLimitMiddleware())  // Optional: Basic rate limiting
+    
+    // database
+    // ... after app = try await Vapor.Application.make()
+    app.databases.use(.sqlite(.file(config.sqliteFileName)), as: .sqlite)  // Or PostgreSQL config
+    app.migrations.add(CreateApiKeys())  // Define a migration for your key model
+    try await app.autoMigrate()
+
     
     let transport = VaporTransport(routesBuilder: app)
     let handler = Handler()
@@ -101,3 +111,4 @@ struct Config: Codable {
     try await app.execute()
   }
 }
+
