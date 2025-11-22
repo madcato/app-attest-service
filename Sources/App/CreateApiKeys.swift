@@ -74,8 +74,8 @@ struct CreateApiKeys: AsyncMigration {
   func revert(on database: Database) async throws {
     guard let database = database as? SQLDatabase else { fatalError("Erro accessing db") }
     
-    try await database.raw("DROP TABLE IF EXISTS \(DeviceAssignment.schema)").run()
-    try await database.raw("DROP TABLE IF EXISTS \(ApiKey.schema)").run()
+    try await database.raw("DROP TABLE IF EXISTS \(unsafeRaw: DeviceAssignment.schema)").run()
+    try await database.raw("DROP TABLE IF EXISTS \(unsafeRaw: ApiKey.schema)").run()
     try await database.raw("DROP VIEW IF EXISTS next_available_key").run()
   }
 }
