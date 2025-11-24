@@ -19,7 +19,7 @@ final class DeviceAssignment: Model {
     @Timestamp(key: "assigned_at", on: .create)
     var assignedAt: Date?
     
-    @Timestamp(key: "last_active_at", on: .update)
+  @Timestamp(key: "last_active_at", on: .create)
     var lastActiveAt: Date?
     
     @OptionalField(key: "revenuecat_user_id")

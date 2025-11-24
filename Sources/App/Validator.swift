@@ -3,6 +3,7 @@ import Foundation
 enum Validator {
     static let teamId = ProcessInfo.processInfo.environment["APPLE_DEVELOPER_ACCOUNT_TEAM_ID"] ?? "APPLE_DEVELOPER_ACCOUNT_TEAM_ID enviroment variable not found"
     static let bundleId = ProcessInfo.processInfo.environment["APPLE_APP_BUNLDE_ID"] ?? "APPLE_APP_BUNLDE_ID enviroment variable not found"
+  
     /// Parameters `attestation` and `challenge` are expected to be base64 encoded strings.
     static func isValid(attestation: String, challenge: String, keyId: String) -> Bool {
         guard let attestation = Data(base64Encoded: attestation),

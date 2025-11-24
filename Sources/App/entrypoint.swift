@@ -9,8 +9,16 @@ import FluentSQLiteDriver
 
 struct LoggerMiddleware: Middleware {
   func respond(to request: Request, chainingTo next: Responder) -> EventLoopFuture<Response> {
-    print("Request: \(request.method.rawValue) \(request.url.string)")
-    return next.respond(to: request)
+    print("Request: \(request.method) \(request.url.string)")
+    let future = next.respond(to: request)
+    return future.always { result in
+      switch result {
+      case .success(let response):
+        print("Response: Status \(response.status.code)")
+      case .failure(let error):
+        print("Error: \(error.localizedDescription)")
+      }
+    }
   }
 }
 
@@ -41,10 +49,14 @@ final class RateLimitMiddleware: Middleware {
 
 nonisolated(unsafe) var validChallenges: [String] = []
 
-struct Handler: APIProtocol {
+final class Handler: APIProtocol {
+  let db: Database
   
-  private
-  static let secret = ProcessInfo.processInfo.environment["SECRET"] ?? "SECRET enviroment variable not found"
+  init(db: Database) {
+    self.db = db
+  }
+  
+  internal
   
   func getSecret(_ input: Operations.GetSecret.Input) async throws -> Operations.GetSecret.Output {
     let challenge = Data(AES.GCM.Nonce()).base64EncodedString()
@@ -60,55 +72,62 @@ struct Handler: APIProtocol {
     
     // Check if the challenge is valid
     let challenge = body.challenge
+    
     guard validChallenges.contains(challenge) else {
-      throw Abort(.unauthorized)
+      return .badRequest(Operations.PostSecret.Output.BadRequest())
     }
     // Remove the challenge from the list
     validChallenges.removeAll(where: { $0 == challenge })
     
     // Validate the challenge attestation
     let attestation = body.attestation
+    /// FOR TESTING
+    if attestation == "mockAttestationBase64" {
+      return .ok(.init(body: .json(.init(secret: "{\"grok_api_key\":\"test-grok-key\",\"grok_api_public_key\":\"mockPublicKey\""))))
+    }
+    /// END FOR TESTING
     let keyId = body.keyId
     guard Validator.isValid(attestation: attestation, challenge: challenge, keyId: keyId) else {
-      throw Abort(.unauthorized)
+      return .unauthorized(Operations.PostSecret.Output.Unauthorized())
     }
     
-    // Return the secret
-    return .ok(.init(body: .json(.init(secret: Handler.secret))))
-  }
-}
+    // Access the database and assign an API key for the device (keyId as deviceId)
+    let deviceId = body.deviceId
+    let assignedKey = try await KeyService.assignKey(to: deviceId, on: db)
 
-struct Config: Codable {
-  let port: Int
-  let hostname: String
-  let sqliteFileName: String
+    // Return the assigned API key as the secret
+    return .ok(.init(body: .json(.init(secret: assignedKey))))
+  }
 }
 
 @main struct Entrypoint {
   static func main() async throws {
-    // Load configuration from config.json
-    let configURL = URL(fileURLWithPath: "config.json")
-    let configData = try Data(contentsOf: configURL)
-    let config = try JSONDecoder().decode(Config.self, from: configData)
+    print("TeamID: \(Validator.teamId)")
+    print("BundleID: \(Validator.bundleId)")
+
     
     let app = try await Vapor.Application.make()
-    app.http.server.configuration.port = config.port
-    app.http.server.configuration.hostname = config.hostname
+    app.http.server.configuration.port = Int(ProcessInfo.processInfo.environment["PORT"] ?? "") ?? 44947
+    app.http.server.configuration.hostname = ProcessInfo.processInfo.environment["SERVER_HOST"] ?? "0.0.0.0"
     // Add middleware (order matters: earlier middleware runs first)
     app.middleware.use(LoggerMiddleware())  // Your existing logger
     app.middleware.use(RateLimitMiddleware())  // Optional: Basic rate limiting
     
     // database
     // ... after app = try await Vapor.Application.make()
-    app.databases.use(.sqlite(.file(config.sqliteFileName)), as: .sqlite)  // Or PostgreSQL config
+    let sqliteFileName = (ProcessInfo.processInfo.environment["APP_DATA"] ?? "./") + "keys.db"
+    let sqliteDirectory = (sqliteFileName as NSString).deletingLastPathComponent
+    if !sqliteDirectory.isEmpty {
+      try FileManager.default.createDirectory(atPath: sqliteDirectory, withIntermediateDirectories: true)
+    }
+    app.databases.use(.sqlite(.file(sqliteFileName)), as: .sqlite)  // Or PostgreSQL config
     app.migrations.add(CreateApiKeys())  // Define a migration for your key model
     try await app.autoMigrate()
 
     
     let transport = VaporTransport(routesBuilder: app)
-    let handler = Handler()
+    let handler = Handler(db: app.db)
     try handler.registerHandlers(on: transport, serverURL: Servers.Server1.url())
     try await app.execute()
   }
 }
-

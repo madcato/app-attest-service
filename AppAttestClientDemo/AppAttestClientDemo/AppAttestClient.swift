@@ -13,8 +13,8 @@ import OpenAPIURLSession
 import KeychainSwift
 
 class AppAttestTester {
-  func downloadSecret(keyName: String? = nil) async throws -> String {
-    let client = Client(serverURL: URL(string: "https://tesla.codebenderai.click" /*"http://tesla.local:44947"*/)!, transport: URLSessionTransport(), middlewares: [AuthenticationMiddleware(authorizationHeaderFieldValue: "Bearer hFDp2PH5/MfrbasANQYGmSoWrTtqDtbt8jR4+2Z1Gog=")])
+  func downloadSecret(keyName: String? = nil) async throws -> String? {
+    let client = Client(serverURL: URL(string: "http://192.168.1.77:44947" /*"http://tesla.local:44947"*/)!, transport: URLSessionTransport(), middlewares: [AuthenticationMiddleware(authorizationHeaderFieldValue: "Bearer hFDp2PH5/MfrbasANQYGmSoWrTtqDtbt8jR4+2Z1Gog=")])
     let response = try await client.getSecret(.init())  // Get challenge for app-attest-service
     switch response {
     case .ok(let okResponse):
@@ -23,7 +23,7 @@ class AppAttestTester {
         let challenge = challengeInput.challenge
         let (attestation, keyId) = try await makeAttestation(challenge: challenge)
         let secret = try await send(attestation: attestation, challenge: challenge, keyId: keyId, with: client)
-        if let keyName = keyName {
+        if let secret = secret, let keyName = keyName {
           // Store the secret in Keychain
           let keychain = KeychainSwift()
           keychain.set(secret, forKey: keyName)
@@ -43,8 +43,8 @@ class AppAttestTester {
     return (attestKey, keyId)
   }
   
-  private func send(attestation: String, challenge: String, keyId: String, with client: Client) async throws -> String {
-    let response = try await client.postSecret(body: .json(.init(challenge: challenge, attestation: attestation, keyId: keyId)))
+  private func send(attestation: String, challenge: String, keyId: String, with client: Client) async throws -> String? {
+    let response = try await client.postSecret(body: .json(.init(challenge: challenge, attestation: attestation, keyId: keyId, deviceId: "test-device-id-001")))
     switch response {
     case .ok(let okResponse):
       switch okResponse.body {
@@ -52,7 +52,14 @@ class AppAttestTester {
         return secretInput.secret
       }
     case .undocumented(statusCode: let statusCode, _):
-      fatalError("undocumented status code: \(statusCode)")
+      print("undocumented status code: \(statusCode)")
+      return nil
+    case .badRequest(statusCode: let statusCode):
+      print("bad request status code: \(statusCode)")
+      return nil
+    case .unauthorized(statusCode: let statusCode):
+      print("unauthorized status code: \(statusCode)")
+      return nil
     }
   }
 }
