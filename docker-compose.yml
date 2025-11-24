@@ -23,8 +23,8 @@ services:
       - PORT=44947
       - APP_DATA="/app/data"
       - LOG_LEVEL=${LOG_LEVEL:-debug}
-      - APPLE_DEVELOPER_ACCOUNT_TEAM_ID=TW65EXAM4U
-      - APPLE_APP_BUNLDE_ID=org.veladan.AppAttestClientDemo
+      - APPLE_DEVELOPER_ACCOUNT_TEAM_ID=<YOUR_APP_TEAMID>
+      - APPLE_APP_BUNLDE_ID=<YOUR_APP_BUNDLE_ID>
     ports:
       - "44947:44947"
     volumes:

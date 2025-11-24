@@ -28,9 +28,7 @@ The `AppAttestClientDemo` project is am Xcode app designed to interact with the 
     git clone https://github.com/madcato/app-attest-service.git
     cd app-attest-service
     ```
-
 2. Create the **`.ev.secret`** file as shown in the **Configuration** section below.
-
 3.  **Build and run the application using Docker Compose:**
 
     ```bash
@@ -40,6 +38,20 @@ The `AppAttestClientDemo` project is am Xcode app designed to interact with the 
 
     This will build the Docker image and start the application.  The service will be accessible on port `44947`.
 
+### To build and publish your own image
+
+1. Build image with docker
+   ```bash
+   docker build -t tunombredeusuario/app-attest-service:latest .
+   ```
+2. Login Docker Hub
+   ```bash
+   docker login
+   ```
+4. Upload the image
+   ```bash
+   docker push tunombredeusuario/app-attest-service:latest
+   ```
 ## Configuration
 
 The application's behavior can be configured through environment variables.
