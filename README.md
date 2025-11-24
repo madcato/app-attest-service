@@ -52,6 +52,20 @@ The `AppAttestClientDemo` project is am Xcode app designed to interact with the 
    ```bash
    docker push tunombredeusuario/app-attest-service:latest
    ```
+5. Run with Docker
+   ```bash
+   docker run --rm microx.local:5000/app-attest-service:latest
+   ```
+6. Or launch service, if using docker-compose.yml
+   ```bash
+   docker-compose up -d app-attest-service
+
+### Import your own keys
+Add your key to a file an execute this command changing the paths of the key files and you db.
+```bash
+./import_keys.sh keys.csv <docker-compose-volumen-path>/keys.db
+```
+
 ## Configuration
 
 The application's behavior can be configured through environment variables.
