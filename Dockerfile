@@ -70,8 +70,9 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
 RUN useradd --user-group --create-home --system --skel /dev/null --home-dir /app vapor
 
 # Create directory for dqlite3 database
-RUN mkdir -p /app/data
-RUN chown vapor:vapor /app/data
+RUN mkdir -p /app/data \
+    && chown -R vapor:vapor /app/data \
+    && chmod -R 775 /app/data
 
 # Switch to the new home directory
 WORKDIR /app
