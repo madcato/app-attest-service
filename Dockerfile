@@ -71,6 +71,7 @@ RUN useradd --user-group --create-home --system --skel /dev/null --home-dir /app
 
 # Create directory for dqlite3 database
 RUN mkdir -p /app/data
+RUN chown vapor:vapor /app/data
 
 # Switch to the new home directory
 WORKDIR /app
