@@ -69,16 +69,18 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
 # Create a vapor user and group with /app as its home directory
 RUN useradd --user-group --create-home --system --skel /dev/null --home-dir /app vapor
 
-# Create directory for dqlite3 database
-RUN mkdir -p /app/data \
-    && chown -R vapor:vapor /app/data \
-    && chmod -R 775 /app/data
-
 # Switch to the new home directory
 WORKDIR /app
 
 # Copy built executable and any staged resources from builder
 COPY --from=build --chown=vapor:vapor /staging /app
+
+# Create directory for dqlite3 database
+RUN mkdir -p /app/data \
+    && chown -R vapor:vapor /app/data \
+    && chmod -R 775 /app/data
+
+RUN chown -R vapor:vapor /app && chmod -R 775 /app/data
 
 # Provide configuration needed by the built-in crash reporter and some sensible default behaviors.
 ENV SWIFT_BACKTRACE=enable=yes,sanitize=yes,threads=all,images=all,interactive=no,swift-backtrace=./swift-backtrace-static
